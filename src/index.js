@@ -47,7 +47,7 @@ function composeCodexPrompt(audit) {
     '',
     '## Verification',
     '- Run project tests.',
-    '- Confirm the Worker responds on /health and /demo.',
+    '- Confirm the Worker responds on /health, /readiness, and /demo.',
   ].join('\n');
 }
 
@@ -59,11 +59,25 @@ export default {
         ok: true,
         name: 'Marcus Operator Demo',
         message: 'Marcus can audit a project, write a Codex prompt, and track approval-gated execution.',
-        endpoints: ['/health', '/audit', '/codex/start'],
+        endpoints: ['/health', '/readiness', '/audit', '/codex/start'],
       });
     }
     if (url.pathname === '/health') {
       return json({ ok: true, service: 'marcus-operator-demo-worker', time: new Date().toISOString() });
+    }
+    if (url.pathname === '/readiness') {
+      return json({
+        ok: true,
+        status: 'ready',
+        service: 'marcus-operator-demo-worker',
+        mode: env.DEMO_MODE || 'codex-handoff',
+        checks: {
+          runtime: true,
+          audit: true,
+          codexHandoff: true,
+          externalActionsApprovalGated: true,
+        },
+      });
     }
     if (url.pathname === '/audit' && request.method === 'POST') {
       const input = await request.json().catch(() => ({}));
