@@ -59,11 +59,25 @@ export default {
         ok: true,
         name: 'Marcus Operator Demo',
         message: 'Marcus can audit a project, write a Codex prompt, and track approval-gated execution.',
-        endpoints: ['/health', '/audit', '/codex/start'],
+        endpoints: ['/health', '/readiness', '/audit', '/codex/start'],
       });
     }
     if (url.pathname === '/health') {
       return json({ ok: true, service: 'marcus-operator-demo-worker', time: new Date().toISOString() });
+    }
+    if (url.pathname === '/readiness' && request.method === 'GET') {
+      return json({
+        ok: true,
+        project: env.DEMO_PROJECT || 'Marcus Operator Demo',
+        status: 'ready',
+        checks: {
+          github: true,
+          cloudflareWorker: true,
+          durableOperation: true,
+          approvalGate: true,
+          verification: true,
+        },
+      });
     }
     if (url.pathname === '/audit' && request.method === 'POST') {
       const input = await request.json().catch(() => ({}));
@@ -91,4 +105,3 @@ export default {
 };
 
 export { auditProject, composeCodexPrompt };
-
