@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "marcus-operator-demo-worker",
+  "main": "src/index.js",
+  "compatibility_date": "2026-08-12",
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "DEMO_PROJECT": "Marcus Operator Demo",
+    "DEMO_MODE": "codex-handoff"
+  }
+}
+
