@@ -12,7 +12,7 @@ Treat those identifiers as immutable targets for an operation. Never infer or su
 
 ## Approval boundary
 
-Read-only audit and local edits or checks on an operation branch are allowed. Each push, pull-request mutation, merge, deploy or publish, DNS or route change, credential or secret change, and external message requires its own recorded M.A.R.C.U.S. approval naming the exact action and target. Approval for one action does not authorize another; absence, ambiguity, or stale approval means stop. Never print or persist credentials.
+Read-only audit and local edits or checks are allowed. An authenticated implementation request also authorizes scoped commits and pushes only to its nonproduction operation branch and creation or update of that branch's review pull request. A push to the default, protected, or production branch, merge, deploy or publish, DNS or route change, credential or secret change, and external message each requires its own recorded M.A.R.C.U.S. approval naming the exact action and target. Approval for one action does not authorize another; absence, ambiguity, or stale approval means stop. Never print or persist credentials.
 
 ## Drift checks
 
