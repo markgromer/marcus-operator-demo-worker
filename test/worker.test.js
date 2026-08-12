@@ -30,3 +30,31 @@ test('worker exposes health and simulated Codex start endpoints', async () => {
   assert.match(body.codexPrompt, /Goal for Codex/);
 });
 
+test('GET /readiness reports project and operation readiness checks', async () => {
+  const response = await worker.fetch(new Request('https://example.com/readiness'), {
+    DEMO_PROJECT: 'Marcus Operator Demo',
+  });
+
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type'), /^application\/json/);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+  assert.deepEqual(await response.json(), {
+    ok: true,
+    project: 'Marcus Operator Demo',
+    status: 'ready',
+    checks: {
+      github: true,
+      cloudflareWorker: true,
+      durableOperation: true,
+      approvalGate: true,
+      verification: true,
+    },
+  });
+});
+
+test('root endpoint advertises readiness without removing existing endpoints', async () => {
+  const response = await worker.fetch(new Request('https://example.com/'), {});
+  const body = await response.json();
+
+  assert.deepEqual(body.endpoints, ['/health', '/readiness', '/audit', '/codex/start']);
+});
