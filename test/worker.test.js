@@ -1,7 +1,25 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import worker, { auditProject, composeCodexPrompt } from '../src/index.js';
+import worker, { DEMO_VERSION, auditProject, composeCodexPrompt } from '../src/index.js';
+
+test('exports the demo version', () => {
+  assert.equal(DEMO_VERSION, '0.1.0');
+});
+
+test('GET /version returns the service version', async () => {
+  const response = await worker.fetch(new Request('https://example.com/version'), {});
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {
+    ok: true,
+    service: 'marcus-operator-demo-worker',
+    version: DEMO_VERSION,
+  });
+
+  const postResponse = await worker.fetch(new Request('https://example.com/version', { method: 'POST' }), {});
+  assert.equal(postResponse.status, 404);
+});
 
 test('auditProject marks risky external actions as approval-gated', () => {
   const audit = auditProject({ project: 'Royal Doody', request: 'Deploy and text the client' });
@@ -35,4 +53,3 @@ test('worker exposes health, readiness, and simulated Codex start endpoints', as
   assert.equal(body.session.status, 'handoff_ready');
   assert.match(body.codexPrompt, /Goal for Codex/);
 });
-
