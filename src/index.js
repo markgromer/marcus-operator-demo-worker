@@ -7,6 +7,8 @@ const json = (body, init = {}) => new Response(JSON.stringify(body, null, 2), {
   },
 });
 
+const DEMO_VERSION = '0.1.0';
+
 function auditProject(input = {}, env = {}) {
   const project = String(input.project || env.DEMO_PROJECT || 'Demo Project').trim();
   const request = String(input.request || 'Audit the project and prepare Codex.').trim();
@@ -65,6 +67,13 @@ export default {
     if (url.pathname === '/health') {
       return json({ ok: true, service: 'marcus-operator-demo-worker', time: new Date().toISOString() });
     }
+    if (url.pathname === '/version' && request.method === 'GET') {
+      return json({
+        ok: true,
+        service: 'marcus-operator-demo-worker',
+        version: DEMO_VERSION,
+      });
+    }
     if (url.pathname === '/readiness') {
       return json({
         ok: true,
@@ -104,5 +113,4 @@ export default {
   },
 };
 
-export { auditProject, composeCodexPrompt };
-
+export { DEMO_VERSION, auditProject, composeCodexPrompt };
